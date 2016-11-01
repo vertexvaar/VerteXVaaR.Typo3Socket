@@ -1,0 +1,33 @@
+{
+	"name": "vertexvaar/typo3_socket",
+	"description": "Socket for TYPO3",
+	"license": "GPL-2.0",
+	"type": "typo3-cms-extension",
+	"homepage": "https://github.com/vertexvaar/typo3_socket",
+	"authors": [
+		{
+			"name": "Oliver Eglseder",
+			"email": "php@vxvr.de",
+			"homepage": "https://www.vxvr.de",
+			"role": "Developer"
+		}
+	],
+	"autoload": {
+		"psr-4": {
+			"VerteXVaaR\\Typo3Socket\\": "Classes"
+		}
+	},
+	"require": {
+		"react/socket": "0.4.*",
+		"php": "~7.0"
+	},
+	"replace": {
+		"typo3_socket": "self.version",
+		"typo3-ter/typo3-socket": "self.version"
+	},
+	"extra": {
+		"branch-alias": {
+			"dev-master": "1.0.x-dev"
+		}
+	}
+}
