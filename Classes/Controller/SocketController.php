@@ -16,16 +16,18 @@ namespace VerteXVaaR\Typo3Socket\Controller;
  * GNU General Public License for more details.
  */
 
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Log\LogManager;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
+use VerteXVaaR\Typo3Socket\Domain\Model\Configuration;
+use VerteXVaaR\Typo3Socket\Domain\Repository\ConfigurationRepository;
 
 /**
  * Class SocketController
  */
-class SocketController
+class SocketController extends ActionController
 {
     /**
      * @var LoggerInterface
@@ -33,20 +35,30 @@ class SocketController
     protected $logger = null;
 
     /**
+     * @var ConfigurationRepository
+     */
+    protected $configurationRepo = null;
+
+    /**
      * SocketController constructor.
      */
     public function __construct()
     {
         $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+        $this->configurationRepo = GeneralUtility::makeInstance(ConfigurationRepository::class);
+        parent::__construct();
     }
 
     /**
-     * @param RequestInterface $request
-     * @param ResponseInterface $response
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @param Configuration $configuration
      */
-    public function mainAction(RequestInterface $request, ResponseInterface $response)
+    public function configureAction(Configuration $configuration = null)
     {
-        $this->logger->debug('asd');
+        if (null === $configuration) {
+            $configuration = $this->configurationRepo->get();
+        } else {
+            $this->configurationRepo->set($configuration);
+        }
+        $this->view->assign('configuration', $configuration);
     }
 }

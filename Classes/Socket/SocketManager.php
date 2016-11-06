@@ -19,6 +19,7 @@ namespace VerteXVaaR\Typo3Socket\Socket;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use VerteXVaaR\Typo3Socket\Domain\Repository\ConfigurationRepository;
 use VerteXVaaR\Typo3Socket\Server\TcpSocketServer;
 
 /**
@@ -32,11 +33,17 @@ class SocketManager
     protected $logger = null;
 
     /**
+     * @var ConfigurationRepository
+     */
+    protected $configurationRepo = null;
+
+    /**
      * SocketManager constructor.
      */
     public function __construct()
     {
         $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(get_class($this));
+        $this->configurationRepo = GeneralUtility::makeInstance(ConfigurationRepository::class);
     }
 
     /**
@@ -44,10 +51,11 @@ class SocketManager
      */
     public function run()
     {
-        $port = 8800;
-        $host = '127.0.0.1';
-        $this->logger->info('Creating TCP socket server on tcp://' . $host . ':' . $port);
-        $tcpSocketServer = new TcpSocketServer($port, $host);
+        $configuration = $this->configurationRepo->get();
+        $this->logger->info(
+            'Creating TCP socket server on tcp://' . $configuration->getHost() . ':' . $configuration->getPort()
+        );
+        $tcpSocketServer = new TcpSocketServer($configuration->getPort(), $configuration->getHost());
         $tcpSocketServer->run();
     }
 }

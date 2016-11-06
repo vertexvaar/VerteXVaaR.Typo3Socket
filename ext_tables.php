@@ -14,15 +14,16 @@
  * GNU General Public License for more details.
  */
 
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addModule(
+\TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule(
+    'VerteXVaaR.Typo3Socket',
     'tools',
     'sockets',
     '',
-    '',
     [
-        'routeTarget' => \VerteXVaaR\Typo3Socket\Controller\SocketController::class . '::mainAction',
+        'Socket' => 'configure,startSocket',
+    ],
+    [
         'access' => 'admin',
-        'name' => 'tools_sockets',
         'icon' => 'EXT:typo3_socket/Resources/Public/Icons/Extension.svg',
         'labels' => 'LLL:EXT:typo3_socket/Resources/Private/Language/module.xlf'
     ]

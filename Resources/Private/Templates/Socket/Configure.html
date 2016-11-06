@@ -1,0 +1,49 @@
+<f:be.container>
+	<div class="module" data-module-id="" data-module-name="">
+		<div class="module-docheader t3js-module-docheader">
+			<div
+				class="module-docheader-bar module-docheader-bar-navigation t3js-module-docheader-bar t3js-module-docheader-bar-navigation">
+				<div class="module-docheader-bar-column-left"></div>
+				<div class="module-docheader-bar-column-right"></div>
+			</div>
+			<div
+				class="module-docheader-bar module-docheader-bar-buttons t3js-module-docheader-bar t3js-module-docheader-bar-buttons">
+				<div class="module-docheader-bar-column-left"></div>
+				<div class="module-docheader-bar-column-right"></div>
+			</div>
+		</div>
+
+		<div class="module-body t3js-module-body" style="padding-top: 89px;">
+			<f:flashMessages/>
+
+			<f:form action="configure" object="{configuration}" objectName="configuration">
+				<fieldset class="form-section">
+					<h4 class="form-section-headline">Server Settings</h4>
+					<div class="row">
+						<div class="form-group col-sm-3">
+							<label for="tx_typo3logs_configuration_host">
+								Host:
+							</label>
+							<f:form.textfield property="host" id="tx_typo3logs_configuration_host"
+											  class="form-control form-control-adapt"/>
+						</div>
+					</div>
+					<div class="row">
+						<div class="form-group col-sm-3">
+							<label for="tx_typo3logs_configuration_port">
+								Host:
+							</label>
+							<f:form.textfield property="port" id="tx_typo3logs_configuration_port"
+											  class="form-control form-control-adapt"/>
+						</div>
+					</div>
+				</fieldset>
+				<fieldset class="form-section">
+					<div class="form-group">
+						<f:form.submit value="Save" class="form-control form-control-adapt"/>
+					</div>
+				</fieldset>
+			</f:form>
+		</div>
+	</div>
+</f:be.container>
