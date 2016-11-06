@@ -16,12 +16,15 @@ namespace VerteXVaaR\Typo3Socket\Server;
  * GNU General Public License for more details.
  */
 
+use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory;
 use React\EventLoop\LoopInterface;
 use React\Socket\Connection;
 use React\Socket\Server;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\DatabaseConnection;
+use TYPO3\CMS\Core\DataHandling\DataHandler;
+use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use VerteXVaaR\Typo3Socket\Stream\BufferedStream;
@@ -53,12 +56,18 @@ class TcpSocketServer implements SocketServer
     protected $streams = [];
 
     /**
+     * @var LoggerInterface
+     */
+    protected $logger = null;
+
+    /**
      * TcpSocketServer constructor.
      * @param int $port
      * @param string $host
      */
     public function __construct(int $port, string $host = '127.0.0.1')
     {
+        $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(get_class($this));
         $this->port = $port;
         $this->host = $host;
     }
@@ -87,7 +96,7 @@ class TcpSocketServer implements SocketServer
         $stream->writeLine('TYPO3 Socket comes with ABSOLUTELY NO WARRANTY;');
         $stream->writeLine('This is free software, and you are welcome to redistribute it under certain conditions');
         $stream->writeLine('See the LICENSE file of this package for more information.');
-        $stream->write('T3S> ');
+//        $stream->write('T3S> ');
         $stream->on('data', [$this, 'onData']);
     }
 
@@ -112,12 +121,24 @@ class TcpSocketServer implements SocketServer
             $stream->end('Goodbye');
         } elseif ('clients' === $data) {
             $stream->writeLine('Number of active clients: ' . count($this->streams));
+        } elseif (0 === strpos($data, 'dh:data:')) {
+            $GLOBALS['BE_USER']->user['admin'] = 1;
+            $data = substr($data, 8);
+            $array = json_decode($data, true);
+
+            $this->logger->info('rec dh data', $array);
+
+            $datahandler = GeneralUtility::makeInstance(DataHandler::class);
+            $datahandler->start($array, []);
+            $datahandler->process_datamap();
+
+            $stream->writeLine('Done');
         } elseif (0 === strpos($data, 'broadcast:')) {
             $message = escapeshellcmd(trim(substr($data, 10)));
             foreach ($this->streams as $stream) {
                 $stream->writeLine('');
                 $stream->writeLine('T3S BROADCAST: ' . $message);
-                $stream->write('T3S> ');
+//                $stream->write('T3S> ');
             }
             return;
         } elseif ('shutdown' === $data) {
@@ -157,7 +178,7 @@ class TcpSocketServer implements SocketServer
             $stream->writeLine('    show:id:X     show all properties of the page with UID X');
             $stream->writeLine('    broadcast:X   send a message X to all connected clients');
         }
-        $stream->write('T3S> ');
+//        $stream->write('T3S> ');
     }
 
     /**
