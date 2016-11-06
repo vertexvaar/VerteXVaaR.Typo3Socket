@@ -44,13 +44,17 @@ class DataHook
      */
     public function processDatamap_afterAllOperations(DataHandler $dataHandler)
     {
-        $handle = fsockopen($this->configuration->getHost(), $this->configuration->getPort());
+        try {
+            $handle = fsockopen($this->configuration->getHost(), $this->configuration->getPort());
 
-        if (!empty($dataHandler->datamap)) {
-            $dataString = 'dh:data:' . json_encode($dataHandler->datamap);
-            fwrite($handle, $dataString . PHP_EOL);
+            if (!empty($dataHandler->datamap)) {
+                $dataString = 'dh:data:' . json_encode($dataHandler->datamap);
+                fwrite($handle, $dataString . PHP_EOL);
+            }
+
+            fclose($handle);
+        } catch (\Exception $e) {
+            // ignore
         }
-
-        fclose($handle);
     }
 }
