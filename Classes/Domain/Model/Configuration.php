@@ -21,19 +21,20 @@ namespace VerteXVaaR\Typo3Socket\Domain\Model;
  */
 class Configuration
 {
-    const DEFAULT_HOST = '127.0.0.1';
-    const DEFAULT_PORT = 8800;
-    const DEFAULT_SETTINGS = ['host' => self::DEFAULT_HOST, 'port' => self::DEFAULT_PORT];
-
     /**
      * @var string
      */
-    protected $host = self::DEFAULT_HOST;
+    protected $host = '127.0.0.1';
 
     /**
      * @var int
      */
-    protected $port = self::DEFAULT_PORT;
+    protected $port = 8800;
+
+    /**
+     * @var bool
+     */
+    protected $passive = true;
 
     /**
      * Configuration constructor.
@@ -44,6 +45,7 @@ class Configuration
         if (null !== $config) {
             $this->setHost($config['host']);
             $this->setPort($config['port']);
+            $this->setPassive($config['passive']);
         }
     }
 
@@ -80,10 +82,18 @@ class Configuration
     }
 
     /**
-     * @return array
+     * @return boolean
      */
-    public function toArray()
+    public function isPassive(): bool
     {
-        return ['host' => $this->host, 'port' => $this->port];
+        return $this->passive;
+    }
+
+    /**
+     * @param boolean $passive
+     */
+    public function setPassive(bool $passive)
+    {
+        $this->passive = $passive;
     }
 }

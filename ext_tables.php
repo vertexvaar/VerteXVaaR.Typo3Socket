@@ -14,6 +14,8 @@
  * GNU General Public License for more details.
  */
 
+use VerteXVaaR\Typo3Socket\Domain\Repository\ConfigurationRepository as VxvrConfRepo;
+
 \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule(
     'VerteXVaaR.Typo3Socket',
     'tools',
@@ -25,6 +27,11 @@
     [
         'access' => 'admin',
         'icon' => 'EXT:typo3_socket/Resources/Public/Icons/Extension.svg',
-        'labels' => 'LLL:EXT:typo3_socket/Resources/Private/Language/module.xlf'
+        'labels' => 'LLL:EXT:typo3_socket/Resources/Private/Language/module.xlf',
     ]
 );
+
+if (!\TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(VxvrConfRepo::class)->get()->isPassive()) {
+    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] =
+        \VerteXVaaR\Typo3Socket\Hooks\DataHook::class;
+}

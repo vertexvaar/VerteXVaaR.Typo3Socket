@@ -1,6 +1,6 @@
 <?php
 declare(strict_types = 1);
-namespace VerteXVaaR\Typo3Socket\Domain\Repository;
+namespace VerteXVaaR\Typo3Socket\Hooks;
 
 /**
  * TYPO3 Socket; Copyright (C) 2016 Oliver Eglseder <php@vxvr.de>
@@ -16,45 +16,41 @@ namespace VerteXVaaR\Typo3Socket\Domain\Repository;
  * GNU General Public License for more details.
  */
 
-use TYPO3\CMS\Core\Registry;
+use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use VerteXVaaR\Typo3Socket\Domain\Model\Configuration;
+use VerteXVaaR\Typo3Socket\Domain\Repository\ConfigurationRepository;
 
 /**
- * Class ConfigurationRepository
+ * Class DataHook
  */
-class ConfigurationRepository
+class DataHook
 {
     /**
-     * @var Registry
+     * @var Configuration
      */
-    protected $registry = null;
+    protected $configuration = null;
 
     /**
-     * ConfigurationRepository constructor.
+     * DataHook constructor.
      */
     public function __construct()
     {
-        $this->registry = GeneralUtility::makeInstance(Registry::class);
+        $this->configuration = GeneralUtility::makeInstance(ConfigurationRepository::class)->get();
     }
 
     /**
-     * @return Configuration
+     * @param DataHandler $dataHandler
      */
-    public function get()
+    public function processDatamap_afterAllOperations(DataHandler $dataHandler)
     {
-        $configuration = $this->registry->get('tx_typo3socket', 'configuration', false);
-        if (false !== $configuration) {
-            return unserialize($configuration);
+        $handle = fsockopen($this->configuration->getHost(), $this->configuration->getPort());
+
+        if (!empty($dataHandler->datamap)) {
+            $dataString = 'dh:data:' . json_encode($dataHandler->datamap);
+            fwrite($handle, $dataString . PHP_EOL);
         }
-        return new Configuration();
-    }
 
-    /**
-     * @param Configuration $configuration
-     */
-    public function set(Configuration $configuration)
-    {
-        $this->registry->set('tx_typo3socket', 'configuration', serialize($configuration));
+        fclose($handle);
     }
 }
