@@ -8,7 +8,7 @@ A TYPO3 socket can be used to send data to the DataHandler, FileHandler or run c
 
 ## Installation
 
-`composer require vertexvaar/typo3_sockets`
+`composer require vertexvaar/typo3_socket`
 
 ## Usage
 
